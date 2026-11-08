@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blog</title>
+<script>(function(){var t=null;try{t=localStorage.getItem('blog-theme')}catch(e){}
+if(!t)t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+document.documentElement.setAttribute('data-theme',t)})()</script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top"><a class="site" href="#" id="siteName">Blog</a><button class="theme" id="themeBtn" type="button" aria-label="Toggle theme">Dark</button></header>
+<main id="app"><noscript><p class="note">This blog needs JavaScript.</p></noscript></main>
+<footer class="foot" id="foot"></footer>
+<script src="config.js"></script>
+<script src="vendor/marked.umd.js"></script>
+<script src="vendor/purify.min.js"></script>
+<script src="render.js"></script>
+<script src="ui.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

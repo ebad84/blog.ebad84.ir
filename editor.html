@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Write — blog</title>
+<script>(function(){var t=null;try{t=localStorage.getItem('blog-theme')}catch(e){}
+if(!t)t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+document.documentElement.setAttribute('data-theme',t)})()</script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top"><a class="site" href="index.html" id="siteName">Blog</a><button class="theme" id="themeBtn" type="button" aria-label="Toggle theme">Dark</button></header>
+<main class="ed">
+  <div class="row">
+    <div class="wide"><label for="title">Title</label><input id="title" dir="auto"></div>
+    <div><label for="slug">File name (letters, numbers, dashes)</label><input id="slug" dir="ltr" placeholder="my-post"></div>
+    <div><label for="date">Date</label><input id="date" type="date"></div>
+    <div><label for="tags">Tags (comma separated)</label><input id="tags" dir="auto"></div>
+    <div><label for="dir">Text direction</label>
+      <select id="dir"><option value="auto">Auto (each paragraph by its language)</option><option value="rtl">Right to left</option><option value="ltr">Left to right</option></select></div>
+    <div class="wide"><label for="desc">Short description (optional)</label><input id="desc" dir="auto"></div>
+    <div><label><input type="checkbox" id="draft" style="width:auto"> Draft (hidden from the list)</label></div>
+  </div>
+  <label for="text">Text (Markdown)</label>
+  <textarea id="text" dir="auto" spellcheck="false" placeholder="Write here…"></textarea>
+  <div class="acts">
+    <label class="btn" style="margin:0">Open a .md file<input id="open" type="file" accept=".md,text/markdown,text/plain" hidden></label>
+    <button id="clear" type="button">Clear</button>
+  </div>
+
+  <h2>Preview</h2>
+  <div class="preview" id="preview"></div>
+
+  <h2>Result (.md)</h2>
+  <pre class="out" id="out"></pre>
+  <div class="acts"><button id="copy" type="button">Copy</button><button id="dl" type="button">Download .md</button></div>
+  <p class="hint" id="steps"></p>
+</main>
+<footer class="foot" id="foot"></footer>
+<script src="config.js"></script>
+<script src="vendor/marked.umd.js"></script>
+<script src="vendor/purify.min.js"></script>
+<script src="render.js"></script>
+<script src="ui.js"></script>
+<script src="editor.js"></script>
+</body>
+</html>
