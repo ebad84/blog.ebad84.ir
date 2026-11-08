@@ -1,1 +1,6 @@
-["hello-world.md", "fa-bot.md", "esp32-i2s/index.md"]
+[
+  "hello-world.md",
+  "fa-bot.md",
+  "esp32-i2s/index.md",
+  "my-first-post.md"
+]
