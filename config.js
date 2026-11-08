@@ -7,6 +7,7 @@ window.BLOG = {
   //               within a few minutes, no deploy needed. If GitHub can't be
   //               reached (filtered, slow, down) it falls back to this site's own copy.
   //   "local"  -> only from the posts/ folder served with this site.
-  source: "github",
+  // The editor's "Publish" button always commits to the repo below.
+  source: "local",
   github: { owner: "ebad84", repo: "blog.ebad84.ir", branch: "main", path: "posts" }
 };

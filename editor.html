@@ -37,6 +37,15 @@ document.documentElement.setAttribute('data-theme',t)})()</script>
   <pre class="out" id="out"></pre>
   <div class="acts"><button id="copy" type="button">Copy</button><button id="dl" type="button">Download .md</button></div>
   <p class="hint" id="steps"></p>
+
+  <h2>Publish to GitHub</h2>
+  <p class="hint" style="margin:0 0 10px">Commits the post and updates posts/posts.json in one commit on <span id="target"></span>. That push starts the deploy to Arvan.</p>
+  <div class="row">
+    <div class="wide"><label for="token">GitHub token (fine-grained, this repo only, Contents: read and write)</label><input id="token" type="password" autocomplete="off" spellcheck="false" dir="ltr"></div>
+    <div class="wide"><label><input type="checkbox" id="remember" style="width:auto"> Remember the token on this device</label></div>
+  </div>
+  <div class="acts"><button id="publish" type="button">Publish</button><button id="forget" type="button">Forget token</button></div>
+  <p class="hint" id="status" role="status"></p>
 </main>
 <footer class="foot" id="foot"></footer>
 <script src="config.js"></script>
