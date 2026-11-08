@@ -2,8 +2,12 @@
 //   /              -> posts/posts.json (list of .md files), then each .md
 //   /#my-post      -> posts/my-post.md  (or posts/my-post/index.md)
 //   /#tag/esp32    -> list filtered by tag
+// Where the .md files come from is set in config.js (source: "local" or "github").
 (function () {
   var R = window.BlogRender, app = document.getElementById('app');
+  var G = BLOG.source === 'github' ? BLOG.github : null;
+  var RAW = G ? 'https://raw.githubusercontent.com/' + G.owner + '/' + G.repo + '/' + G.branch + '/' : '';
+  var GPATH = G ? String(G.path || 'posts').replace(/^\/+|\/+$/g, '') : 'posts';
 
   function el(tag, cls, text, attrs) {
     var n = document.createElement(tag);
@@ -13,25 +17,39 @@
     return n;
   }
   function link(href, text, dir) { var a = el('a', null, text, { href: href }); if (dir) a.setAttribute('dir', dir); return a; }
-  function getText(path) {
-    return fetch(path, { cache: 'no-cache' }).then(function (r) {
-      if (!r.ok) throw new Error(path + ' ' + r.status);
+  function fetchText(url, ms) {
+    var ctl = new AbortController(), t = ms ? setTimeout(function () { ctl.abort(); }, ms) : null;
+    return fetch(url, { cache: 'no-cache', signal: ctl.signal }).then(function (r) {
+      if (t) clearTimeout(t);
+      if (!r.ok) throw new Error(url + ' ' + r.status);
       return r.text();
-    });
+    }, function (e) { if (t) clearTimeout(t); throw e; });
+  }
+  // rel is always "posts/...". In github mode try GitHub first, then fall back to this site's own copy.
+  function getText(rel) {
+    var local = function () { return fetchText(rel).then(function (t) { return { text: t, remote: false }; }); };
+    if (!G) return local();
+    var url = RAW + GPATH + '/' + rel.replace(/^posts\//, '').split('/').map(encodeURIComponent).join('/');
+    return fetchText(url, 6000).then(function (t) { return { text: t, remote: true }; }, local);
   }
   function slugOf(path) {
     var parts = path.split('/'), last = parts.pop(), stem = last.replace(/\.md$/i, '');
     return (stem.toLowerCase() === 'index' && parts.length) ? parts.pop() : stem;
   }
   function folderOf(path) { return path.indexOf('/') > -1 ? path.slice(0, path.lastIndexOf('/') + 1) : ''; }
-  function parsePost(path, text) {
-    var fm = R.parseFM(text);
-    return { path: path, meta: R.normalize(fm.meta, slugOf(path)), body: fm.body };
+  function parsePost(path, got) {
+    var fm = R.parseFM(got.text);
+    return { path: path, remote: got.remote, meta: R.normalize(fm.meta, slugOf(path)), body: fm.body };
+  }
+  // folder the post lives in, used to resolve relative links (files/x.zip, img/a.png)
+  function baseOf(p) {
+    var f = folderOf(p.path);
+    return p.remote ? RAW + GPATH + '/' + f.replace(/^posts\//, '').split('/').map(encodeURIComponent).join('/') : f;
   }
 
   function allPosts() {
     return getText('posts/posts.json').then(function (j) {
-      var paths = JSON.parse(j), out = new Array(paths.length), i = 0;
+      var paths = JSON.parse(j.text), out = new Array(paths.length), i = 0;
       function worker() {
         if (i >= paths.length) return Promise.resolve();
         var n = i++;
@@ -91,7 +109,7 @@
       var meta = el('div', 'meta'); meta.appendChild(el('time', null, p.meta.date));
       if (p.meta.tags.length) { meta.appendChild(document.createTextNode(' · ')); meta.appendChild(el('span', null, p.meta.tags.join(', '), { dir: 'auto' })); }
       art.appendChild(meta);
-      art.appendChild(R.renderBody(p.body, p.meta.dir, folderOf(p.path)));
+      art.appendChild(R.renderBody(p.body, p.meta.dir, baseOf(p)));
       var pn = el('nav', 'pn'); art.appendChild(pn);
       app.textContent = ''; app.appendChild(art);
       document.title = p.meta.title + ' — ' + BLOG.title;
