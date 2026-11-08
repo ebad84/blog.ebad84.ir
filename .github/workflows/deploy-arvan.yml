@@ -1,0 +1,27 @@
+name: Deploy to ArvanCloud
+
+# Every push to main copies the site to an ArvanCloud Object Storage bucket
+# (S3-compatible) that has static website hosting turned on.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sync to ArvanCloud
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ARVAN_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.ARVAN_SECRET_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+        run: |
+          aws s3 sync . "s3://${{ vars.ARVAN_BUCKET }}" \
+            --endpoint-url "${{ vars.ARVAN_S3_ENDPOINT }}" \
+            --delete \
+            --acl public-read \
+            --cache-control "no-cache" \
+            --exclude ".git/*" --exclude ".github/*" --exclude "README.md"
